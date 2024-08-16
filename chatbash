@@ -127,7 +127,7 @@ else
 fi
 
 # Get suggested commands from ChatGPT
-prompt="Given the description: '$description', please provide only the exact shell commands without any explanation, description, or comments."
+prompt="Given the description: '$description', please provide only the exact plaintext shell commands without any explanation, formatting, description, or comments. Do not use markdown formatting."
 chatgpt_output=$(get_chatgpt_response "$prompt")
 
 # Show the suggested commands and ask for confirmation
