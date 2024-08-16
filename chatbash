@@ -1,0 +1,134 @@
+#!/bin/bash
+
+# Load API key from environment variable
+API_KEY="$OPENAI_API_KEY"
+MODEL="gpt-4"  # You can use "gpt-3.5-turbo" if you prefer
+
+# Function to check if required dependencies are installed
+check_dependencies() {
+    local dependencies=("curl" "jq")
+    local missing_dependencies=()
+
+    for dep in "${dependencies[@]}"; do
+        if ! command -v $dep &> /dev/null; then
+            missing_dependencies+=("$dep")
+        fi
+    done
+
+    if [ ${#missing_dependencies[@]} -ne 0 ]; then
+        echo "The following dependencies are missing:"
+        for dep in "${missing_dependencies[@]}"; do
+            echo "  - $dep"
+        done
+
+        # Ask the user if they want to install the missing dependencies
+        read -p "Do you want to install the missing dependencies? (yes/no): " install_confirm
+        if [[ "$install_confirm" == "yes" ]]; then
+            for dep in "${missing_dependencies[@]}"; do
+                echo "Installing $dep..."
+                sudo apt-get install -y $dep
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to install $dep. Please install it manually and rerun the script."
+                    exit 1
+                fi
+            done
+        else
+            echo "Please install the missing dependencies and run the script again."
+            exit 1
+        fi
+    fi
+}
+
+# Function to call the OpenAI API
+get_chatgpt_response() {
+    local prompt=$1
+    local response=$(curl -s https://api.openai.com/v1/chat/completions \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $API_KEY" \
+        -d '{
+          "model": "'"$MODEL"'",
+          "messages": [{"role": "user", "content": "'"$prompt"'"}]
+        }')
+    
+    # Check for errors in API response
+    if [[ $(echo "$response" | jq -r '.error') != "null" ]]; then
+        echo "Error in API request: $(echo "$response" | jq -r '.error.message')"
+        exit 1
+    fi
+
+    # Extract the response content using jq
+    echo "$response" | jq -r '.choices[0].message.content'
+}
+
+# Function to check for dangerous commands
+is_dangerous_command() {
+    local command="$1"
+    
+    # List of dangerous patterns
+    local dangerous_patterns=(
+        "rm -rf"
+        "mkfs"
+        "dd if"
+        "fdisk"
+        "parted"
+        "mklabel"
+        "mkpart"
+        "wipefs"
+    )
+
+    # Check if the command contains any dangerous pattern
+    for pattern in "${dangerous_patterns[@]}"; do
+        if [[ "$command" == *"$pattern"* ]]; then
+            echo "dangerous"
+            return
+        fi
+    done
+
+    echo "safe"
+}
+
+# Function to execute commands
+execute_commands() {
+    local commands="$1"
+    echo -e "Commands to be executed:\n$commands"
+    
+    # Confirm with the user
+    read -p "Do you want to execute these commands? (yes/no): " confirm
+    if [[ "$confirm" == "yes" ]]; then
+        echo -e "\nExecuting commands..."
+        while IFS= read -r cmd; do
+            # Ensure each line is a command
+            if [[ -n "$cmd" ]] && [[ "$cmd" != *"#"* ]]; then  # Ignore comments
+                if [[ $(is_dangerous_command "$cmd") == "dangerous" ]]; then
+                    echo "Warning: The command '$cmd' is potentially destructive and will not be executed."
+                else
+                    echo "Running: $cmd"
+                    eval "$cmd" || { echo "Error executing command: $cmd"; exit 1; }
+                fi
+            fi
+        done <<< "$commands"
+    else
+        echo "Command execution aborted."
+    fi
+}
+
+# Main script logic
+
+# Check for dependencies before running the rest of the script
+check_dependencies
+
+# Check if any command-line arguments were provided
+if [ $# -gt 0 ]; then
+    # Join all command-line arguments into a single string
+    description="$*"
+else
+    echo "Describe what you want to accomplish:"
+    read description
+fi
+
+# Get suggested commands from ChatGPT
+prompt="Given the description: '$description', please provide only the exact shell commands without any explanation, description, or comments."
+chatgpt_output=$(get_chatgpt_response "$prompt")
+
+# Show the suggested commands and ask for confirmation
+execute_commands "$chatgpt_output"
