@@ -77,4 +77,6 @@ sudo ln -s ~/chatbash/chatbash /usr/local/bin/chatbash  #adjust source directory
 
 - The script checks for potentially dangerous commands (e.g., `rm -rf`, `mkfs`, etc.) and warns the user before executing them.
 - It prompts the user for confirmation before executing any commands.
-- I'm pretty lazy when it comes to error checking and safety features so there's probably a lot I missed.
+- I'm pretty lazy when it comes to error checking and safety features so there's probably a lot I missed. Use at your own risk. Make backups first. You're on your own if you break something.  And for the love of whatever gods you prefer, do not run this on prod systems.
+
+## Example use
