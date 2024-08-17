@@ -98,7 +98,7 @@ execute_commands() {
         echo -e "\nExecuting commands..."
         while IFS= read -r cmd; do
             # Ensure each line is a command
-            if [[ -n "$cmd" ]] && [[ "$cmd" != *"#"* ]]; then  # Ignore comments
+            if [[ -n "$cmd" ]] && [[ "$cmd" != *"#"* ]] && [[ "$cmd" != \`\`\`* ]]; then  # Ignore comments
                 if [[ $(is_dangerous_command "$cmd") == "dangerous" ]]; then
                     echo "Warning: The command '$cmd' is potentially destructive and will not be executed."
                 else
