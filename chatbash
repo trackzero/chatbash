@@ -103,7 +103,14 @@ execute_commands() {
                     echo "Warning: The command '$cmd' is potentially destructive and will not be executed."
                 else
                     echo "Running: $cmd"
-                    eval "$cmd" || { echo "Error executing command: $cmd"; exit 1; }
+                    eval "$cmd"
+                    status=$?
+                    if [[ $status -ne 0 ]]; then
+                        echo "Error: Command '$cmd' failed with status $status."
+                        echo "Execution will continue with the next command."
+                        # Uncomment the next line if you want to stop execution on error
+                        # exit 1
+                    fi
                 fi
             fi
         done <<< "$commands"
