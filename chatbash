@@ -1,4 +1,6 @@
-#!/bin/bash# Load API key from environment variable
+#!/bin/bash
+
+# Load API key from environment variable
 API_KEY="$OPENAI_API_KEY"
 MODEL="gpt-4"# You can use "gpt-3.5-turbo" if you prefer# Function to check if required dependencies are installedcheck_dependencies() {
     local dependencies=("curl""jq")
