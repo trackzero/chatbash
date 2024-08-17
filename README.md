@@ -80,3 +80,22 @@ sudo ln -s ~/chatbash/chatbash /usr/local/bin/chatbash  #adjust source directory
 - I'm pretty lazy when it comes to error checking and safety features so there's probably a lot I missed. Use at your own risk. Make backups first. You're on your own if you break something.  And for the love of whatever gods you prefer, do not run this on prod systems.
 
 ## Example use
+
+````
+ChatBashDev:~$ chatbash "Can you tell me what version of linux Im running, what version of python is installed, and what version of node is installed?"
+Commands to be executed:
+uname -a
+python --version
+node --version
+Do you want to execute these commands? (yes/no): yes
+
+Executing commands...
+Running: uname -a
+Linux genai 6.8.8-2-pve #1 SMP PREEMPT_DYNAMIC PMX 6.8.8-2 (2024-06-24T09:00Z) x86_64 x86_64 x86_64 GNU/Linux
+Running: python --version
+Python 3.12.4
+Running: node --version
+/usr/local/bin/chatbash: line 106: node: command not found
+Error: Command 'node --version' failed with status 127.
+Execution will continue with the next command.
+````
