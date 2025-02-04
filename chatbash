@@ -2,7 +2,7 @@
 
 # Load API key from environment variable
 API_KEY="$OPENAI_API_KEY"
-MODEL="gpt-4"  # You can use "gpt-3.5-turbo" if you prefer
+MODEL="gpt-4o-mini"  #change as necessary
 
 # Function to check if required dependencies are installed
 check_dependencies() {
@@ -134,7 +134,7 @@ else
 fi
 
 # Get suggested commands from ChatGPT
-prompt="Given the description: '$description', please provide only the exact plaintext shell commands without any explanation, formatting, description, or comments. Do not use markdown formatting."
+prompt="Given the description: '$description', please provide only the exact plaintext shell commands without any explanation, formatting, description, or comments. Do not use markdown formatting. Assume I do not have the necessary packages installed."
 chatgpt_output=$(get_chatgpt_response "$prompt")
 
 # Show the suggested commands and ask for confirmation
