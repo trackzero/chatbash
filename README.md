@@ -1,4 +1,3 @@
-
 # ChatBash
 
 ChatBash is a Bash script that interacts with OpenAI's GPT models to generate and execute shell commands based on user input. It ensures that dangerous commands are identified and prompts the user for confirmation before execution.
@@ -66,7 +65,7 @@ The script will generate shell commands based on the provided description using 
 ./chatbash.sh "List all files in the current directory and count them"
 ```
 ### but why does it....
-Fine, you want to make it executable as a regular shell command? 
+Fine, you want to make it executable as a regular shell command?
 
 ```bash
 sudo ln -s ~/chatbash/chatbash /usr/local/bin/chatbash  #adjust source directory as appropriate.
@@ -99,3 +98,20 @@ Running: node --version
 Error: Command 'node --version' failed with status 127.
 Execution will continue with the next command.
 ````
+
+## bBut I thought you worked for...
+
+Yeah yeah, I know. There's a Bedrock version, too. That's the `chatbash-br` version.
+
+But there's some twists. You'll need two environment variables:
+
+```bash
+export BEDROCK_API_KEY="your-key-here"
+export BEDROCK_API_URL="http://<your-bedrock-access-gateway-url-here>/api/v1"
+```
+
+"But I don't have a bedrock access gateway!" you say.
+
+Well, there's one over here: https://github.com/aws-samples/bedrock-access-gateway
+
+Setup of the gateway is beyond the scope of this readme.  Could I have done it natively?  Probably.  Did I?  Well, obviously not.
