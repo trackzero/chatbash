@@ -73,7 +73,7 @@ else
     read description
 fi
 
-prompt="Given the description: '$description', provide only the exact plaintext shell commands with no formatting or explanation. No markdown, no comments."
+prompt="Given the description: '$description', provide only the exact plaintext shell commands with no formatting or explanation. No markdown, no comments. Do not show your thinking process; only output your final recommendation of commands."
 
 command_output=$(get_ollama_response "$prompt")
 execute_commands "$command_output"
