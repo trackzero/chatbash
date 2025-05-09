@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# ---------------------- CONFIG ----------------------
+OLLAMA_MODEL="llama3:latest"
+OLLAMA_API_URL="${OLLAMA_API_URL:-http://localhost:11434}"
+VERBOSE=false
+
+# ---------------------- LOGGING ----------------------
+log() {
+    if $VERBOSE; then
+        echo "[DEBUG] $1"
+    fi
+}
+
+# ---------------------- EXECUTOR ----------------------
+execute_commands() {
+    local commands="$1"
+    echo -e "Commands to be executed:\n$commands"
+    read -p "Do you want to execute these commands? (yes/no): " confirm
+    if [[ "$confirm" == "yes" ]]; then
+        echo -e "\nExecuting commands..."
+        while IFS= read -r cmd; do
+            [[ -z "$cmd" || "$cmd" =~ ^# || "$cmd" =~ ^\`\`\` ]] && continue
+            echo "➡️  Running: $cmd"
+            eval "$cmd"
+            status=$?
+            if [[ $status -ne 0 ]]; then
+                echo "❌  Command failed (exit $status): $cmd"
+            fi
+        done <<< "$commands"
+    else
+        echo "❎ Command execution aborted."
+    fi
+}
+
+# ---------------------- REQUEST HANDLER ----------------------
+get_ollama_response() {
+    local prompt="$1"
+    log "Sending prompt to Ollama at $OLLAMA_API_URL with model $OLLAMA_MODEL"
+
+    local body=$(jq -nc \
+        --arg model "$OLLAMA_MODEL" \
+        --arg prompt "$prompt" \
+        '{model: $model, prompt: $prompt, stream: false}')
+
+    local response=$(curl -s "$OLLAMA_API_URL/api/generate" \
+        -H "Content-Type: application/json" \
+        -d "$body")
+
+    log "Raw response: $response"
+    echo "$response" | jq -r '.response // empty'
+}
+
+# ---------------------- ARG PARSER ----------------------
+while [[ "$1" == --* ]]; do
+    case "$1" in
+        --verbose)
+            VERBOSE=true
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# ---------------------- MAIN ----------------------
+if [ $# -gt 0 ]; then
+    description="$*"
+else
+    echo "Describe what you want to accomplish:"
+    read description
+fi
+
+prompt="Given the description: '$description', provide only the exact plaintext shell commands with no formatting or explanation. No markdown, no comments."
+
+command_output=$(get_ollama_response "$prompt")
+execute_commands "$command_output"
