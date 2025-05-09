@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ---------------------- CONFIG ----------------------
-OLLAMA_MODEL="llama3:latest"
-OLLAMA_API_URL="${OLLAMA_API_URL:-http://localhost:11434}"
+OLLAMA_MODEL="qwen3:8b" # you'll need to have this on your ollama instance
+OLLAMA_API_URL="${OLLAMA_API_URL:-http://localhost:11434}" # if it's localhost you're good, otherwise you need to specify the environment variable.
 VERBOSE=false
 
 # ---------------------- LOGGING ----------------------
