@@ -99,7 +99,7 @@ Error: Command 'node --version' failed with status 127.
 Execution will continue with the next command.
 ````
 
-## bBut I thought you worked for...
+## But I thought you worked for...
 
 Yeah yeah, I know. There's a Bedrock version, too. That's the `chatbash-br` version.
 
@@ -110,7 +110,7 @@ export BEDROCK_API_KEY="your-key-here"
 export BEDROCK_API_URL="http://<your-bedrock-access-gateway-url-here>/api/v1"
 ```
 
-"But I don't have a bedrock access gateway!" you say.
+## "But I don't have a bedrock access gateway!" you say.
 
 Well, there's one over here: https://github.com/aws-samples/bedrock-access-gateway
 
