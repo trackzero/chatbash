@@ -73,7 +73,7 @@ else
     read description
 fi
 
-prompt="Given the description: '$description', provide only the exact plaintext shell commands with no formatting or explanation. No markdown, no comments. Do not show your thinking process; only output your final recommendation of commands."
+prompt="You are a command-line expert. Respond ONLY with valid Bash commands, one per line. Do not include any explanations, reasoning, or tags like <think>. Just return the commands with no other text."
 
 command_output=$(get_ollama_response "$prompt")
 execute_commands "$command_output"
